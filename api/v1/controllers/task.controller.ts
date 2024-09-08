@@ -1,15 +1,23 @@
 import Task from "../models/task.model"
-import {Request, Response} from "express"
-export const index = async (req: Request, res:Response
-) => {
+import { Request, Response } from "express"
+export const index = async (req: Request, res: Response) => {
     const find = {
         deleted: false
     }
-    const task = await Task.find(find)
+    if(req.query.status){
+        find["status"] = req.query.status
+    }
+    const objectSort ={
+
+    }
+    if(req.query.sortKey && req.query.sortValue){
+        objectSort[`${req.query.sortKey}`] = req.query.sortValue
+    }
+    const task = await Task.find(find).sort(objectSort)
     res.json(task)
 
 }
-export const detail = async (req:Request, res:Response) => {
+export const detail = async (req: Request, res: Response) => {
     try {
         const id = req.params.id
         const task = await Task.findOne({
@@ -84,58 +92,58 @@ export const changeMulti = async (req, res) => {
     } catch (error) {
 
     }
-// }
-// module.exports.create = async (req, res) => {
-//     try {
-//         req.body.createdBy = req.user.id
-//         const task = new Task(req.body)
-//         const data = await task.save()
-//         res.json({
-//             code: 200,
-//             message: "Thêm công việc thành công",
-//             data: data
-//         })
+    // }
+    // module.exports.create = async (req, res) => {
+    //     try {
+    //         req.body.createdBy = req.user.id
+    //         const task = new Task(req.body)
+    //         const data = await task.save()
+    //         res.json({
+    //             code: 200,
+    //             message: "Thêm công việc thành công",
+    //             data: data
+    //         })
 
-//     } catch (error) {
-//         res.json({
-//             code: 400,
-//             message: "Lỗi"
-//         })
+    //     } catch (error) {
+    //         res.json({
+    //             code: 400,
+    //             message: "Lỗi"
+    //         })
 
-//     }
+    //     }
 
-// }
-// module.exports.update = async (req, res) => {
-//     try {
-//         await Task.updateOne({
-//             _id: req.params.id
-//         },req.body)
-//         res.json({
-//             code: 200,
-//             message: "Cập nhật công việc thành công"
-//         })
-//     } catch (error) {
-//         res.json({
-//             code: 400,
-//             message: "Lỗi"
-//         })
+    // }
+    // module.exports.update = async (req, res) => {
+    //     try {
+    //         await Task.updateOne({
+    //             _id: req.params.id
+    //         },req.body)
+    //         res.json({
+    //             code: 200,
+    //             message: "Cập nhật công việc thành công"
+    //         })
+    //     } catch (error) {
+    //         res.json({
+    //             code: 400,
+    //             message: "Lỗi"
+    //         })
 
-//     }
+    //     }
 
-// }
-// module.exports.delete= async (req, res) => {
-//     try {
-//         await Task.deleteOne({_id: req.params.id})
-//         res.json({
-//             code: 200,
-//             message: "Xóa công việc thành công"
-//         })
-//     } catch (error) {
-//         res.json({
-//             code: 400,
-//             message: "Lỗi"
-//         })
+    // }
+    // module.exports.delete= async (req, res) => {
+    //     try {
+    //         await Task.deleteOne({_id: req.params.id})
+    //         res.json({
+    //             code: 200,
+    //             message: "Xóa công việc thành công"
+    //         })
+    //     } catch (error) {
+    //         res.json({
+    //             code: 400,
+    //             message: "Lỗi"
+    //         })
 
-//     }
+    //     }
 
 }
