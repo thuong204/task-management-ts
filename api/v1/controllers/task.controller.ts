@@ -1,19 +1,37 @@
-import Task from "../models/task.model"
+import * as pagination from "../../../helpers/pagination"
+import Task, { TaskDocument } from '../models/task.model';
 import { Request, Response } from "express"
+import searchHelper from "../../../helpers/search"
+import { FilterQuery } from "mongoose";
 export const index = async (req: Request, res: Response) => {
-    const find = {
-        deleted: false
-    }
+    const find: FilterQuery<TaskDocument> = { deleted: false };
     if(req.query.status){
-        find["status"] = req.query.status
+        find.status = req.query.status.toString()
     }
+    // sap xep
     const objectSort ={
-
     }
     if(req.query.sortKey && req.query.sortValue){
         objectSort[`${req.query.sortKey}`] = req.query.sortValue
     }
-    const task = await Task.find(find).sort(objectSort)
+    //End sap xep
+
+    //Phan trang 
+    const initPagination = { 
+        currentPage:1,
+        limitItems: 5
+    }
+    const countTasks = await Task.countDocuments(find)
+    const objectPagination = pagination.pagination(initPagination,req.query,countTasks)
+    // End pagination
+
+    //Tim kiem
+    const objectSearch = searchHelper(req.query)
+    if (req.query.keyword) {
+        find.title = objectSearch.regex
+    }
+
+    const task = await Task.find(find).sort(objectSort).limit(objectPagination.limitItems).skip(objectPagination.skip)
     res.json(task)
 
 }
